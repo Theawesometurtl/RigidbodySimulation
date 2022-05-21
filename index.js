@@ -7,11 +7,11 @@ canvas.height = window.innerHeight;
 
 class Polygon {
    constructor() {
-      this.verticies = {
+      this.vertices = {
          x : [],
          y : []
       };
-      this.verticieSize = 5;
+      this.vertexSize = 5;
 
       this.velocity = {
          x: 0,
@@ -26,7 +26,13 @@ class Polygon {
    }
 
    update() {
-      
+      this.position.x += this.velocity.x;
+      this.position.y += this.velocity.y
+
+      //find the vertices of the polygon using the centroid
+      for (let i = 0; i < this.vertices.length; i++) {
+         
+      }
 
       //do stuff to the polygon
 
@@ -38,38 +44,50 @@ class Polygon {
       //drawing polygon
       c.fillStyle = "yellow";
       c.beginPath();
-      c.moveTo(this.verticies.x[0], this.verticies.y[0]);
-      for (let i = 1; i < this.verticies.x.length; i++) {
-         c.lineTo(this.verticies.x[i], this.verticies.y[i]);
+      //I'm adding the position of the polygon to the moveTo because all the vertices are defined in relation to the center of mass
+      c.moveTo(this.vertices.x[0] + this.position.x, this.vertices.y[0] + this.position.y);
+      for (let i = 1; i < this.vertices.x.length; i++) {
+         c.lineTo(this.vertices.x[i] + this.position.x, this.vertices.y[i] + this.position.y);
       }
       c.closePath();
       c.fill();
 
       //drawing centroid(center of mass)
       c.fillStyle = "red";
-      c.fillRect(this.position.x, this.position.y, this.verticieSize, this.verticieSize)
+      c.fillRect(this.position.x, this.position.y, this.vertexSize, this.vertexSize)
 
 
-      //drawing verticies
-      for (let i = 0; i < this.verticies.x.length; i++) {
+      //drawing vertices
+      for (let i = 0; i < this.vertices.x.length; i++) {
          c.fillStyle = "green";
-         c.fillRect(this.verticies.x[i], this.verticies.y[i], this.verticieSize, this.verticieSize)
+         c.fillRect(this.vertices.x[i] + this.position.x, this.vertices.y[i] + this.position.y, this.vertexSize, this.vertexSize)
       }
 
    }
 
-
    create() {
+      
+   }
+
+   findCentroid() {
       //finding the centroid of the polygon by averaging all the vertices
       let allTheXVertices = 0;
       let allTheYVertices = 0;
-      for (let i = 0; i < this.verticies.x.length; i++) {
+      for (let i = 0; i < this.vertices.x.length; i++) {
          
-         allTheXVertices += this.verticies.x[i]
-         allTheYVertices += this.verticies.y[i]
+         allTheXVertices += this.vertices.x[i];
+         allTheYVertices += this.vertices.y[i];
       }
-      this.position.x = allTheXVertices / this.verticies.x.length;
-      this.position.y = allTheYVertices / this.verticies.y.length;
+      this.position.x = allTheXVertices / this.vertices.x.length;
+      this.position.y = allTheYVertices / this.vertices.y.length;
+
+   }
+   createPolygon() { 
+      //define the vertices of the polygon in relation to the center of mass
+      for (let i = 0; i < this.vertices.x.length; i++) { 
+         this.vertices.x[i] -= this.position.x;
+         this.vertices.y[i] -= this.position.y;
+      }
    }
 }
 
@@ -89,11 +107,11 @@ setInterval(game, 15);//framerate (milliseconds per run of the main game functio
 function printMousePos(event) {
    //needed to get mouse position relative to the canvas
    var rect = canvas.getBoundingClientRect();
-   //adding mouse position to list of verticies
-   polygon.verticies.x.push(event.clientX - rect.left);
-   polygon.verticies.y.push(event.clientY - rect.top);
+   //adding mouse position to list of vertices
+   polygon.vertices.x.push(event.clientX - rect.left);
+   polygon.vertices.y.push(event.clientY - rect.top);
    console.log(event.clientX - rect.left, event.clientY - rect.top);
-   polygon.create();
+   
  }
  //checking for mouse click event
  canvas.addEventListener("click", printMousePos);
@@ -107,7 +125,8 @@ window.addEventListener("keydown", function (event) {
    switch (event.key) {
 
       case "c":
-         
+         polygon.findCentroid();
+         polygon.createPolygon();
          break;
 
       default:
