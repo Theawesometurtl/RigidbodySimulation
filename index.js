@@ -19,9 +19,10 @@ class Polygon {
       };
 
       this.position = {
-         x: 0,
-         y: 0
+         x: -10,
+         y: -10
       };
+      this.angle = 0;
 
    }
 
@@ -44,10 +45,12 @@ class Polygon {
       //drawing polygon
       c.fillStyle = "yellow";
       c.beginPath();
+
+
       //I'm adding the position of the polygon to the moveTo because all the vertices are defined in relation to the center of mass
-      c.moveTo(this.vertices.x[0] + this.position.x, this.vertices.y[0] + this.position.y);
+      c.moveTo((Math.cos(this.angle * Math.PI / 180) * this.vertices.x[0]) - (Math.sin(this.angle * Math.PI / 180) * this.vertices.y[0]) + this.position.x, (Math.sin(this.angle * Math.PI / 180) * this.vertices.x[0]) - (Math.cos(this.angle * Math.PI / 180) * this.vertices.y[0]) + this.position.y);
       for (let i = 1; i < this.vertices.x.length; i++) {
-         c.lineTo(this.vertices.x[i] + this.position.x, this.vertices.y[i] + this.position.y);
+         c.lineTo((Math.cos(this.angle * Math.PI / 180) * this.vertices.x[i]) - (Math.sin(this.angle * Math.PI / 180) * this.vertices.y[i]) + this.position.x, (Math.sin(this.angle * Math.PI / 180) * this.vertices.x[i]) - (Math.cos(this.angle * Math.PI / 180) * this.vertices.y[i]) + this.position.y);
       }
       c.closePath();
       c.fill();
@@ -132,7 +135,8 @@ window.addEventListener("keydown", function (event) {
    switch (event.key) {
 
       case "c":
-         polygon.velocity.x = 1;
+         //polygon.velocity.y = 1;
+         polygon.angle += 1;
          break;
 
       default:
