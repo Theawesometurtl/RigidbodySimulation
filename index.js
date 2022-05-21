@@ -29,7 +29,7 @@ class Polygon {
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
 
-      //find the vertices of the polygon using the centroid
+      //find the vertices of the polygon using the centroid and check for collisions
       for (let i = 0; i < this.vertices.length; i++) {
          
       }
@@ -65,11 +65,17 @@ class Polygon {
 
    }
 
-   create() {
-      
-   }
+   addVertex(x, y) {
+      //finding absolute coords of vertices
+      for (let i = 0; i < this.vertices.x.length; i++) {
+         this.vertices.x[i] += this.position.x;
+         this.vertices.y[i] += this.position.y;
+      }
 
-   findCentroid() {
+      //adding new vertex to list of vertices
+      polygon.vertices.x.push(x);
+      polygon.vertices.y.push(y);
+
       //finding the centroid of the polygon by averaging all the vertices
       let allTheXVertices = 0;
       let allTheYVertices = 0;
@@ -81,14 +87,15 @@ class Polygon {
       this.position.x = allTheXVertices / this.vertices.x.length;
       this.position.y = allTheYVertices / this.vertices.y.length;
 
-   }
-   createPolygon() { 
       //define the vertices of the polygon in relation to the center of mass
       for (let i = 0; i < this.vertices.x.length; i++) { 
          this.vertices.x[i] -= this.position.x;
          this.vertices.y[i] -= this.position.y;
       }
+
    }
+
+
 }
 
 polygon = new Polygon();
@@ -108,8 +115,8 @@ function printMousePos(event) {
    //needed to get mouse position relative to the canvas
    var rect = canvas.getBoundingClientRect();
    //adding mouse position to list of vertices
-   polygon.vertices.x.push(event.clientX - rect.left);
-   polygon.vertices.y.push(event.clientY - rect.top);
+   
+   polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top)
    console.log(event.clientX - rect.left, event.clientY - rect.top);
    
  }
@@ -125,8 +132,7 @@ window.addEventListener("keydown", function (event) {
    switch (event.key) {
 
       case "c":
-         polygon.findCentroid();
-         polygon.createPolygon();
+         polygon.velocity.x = 1;
          break;
 
       default:
