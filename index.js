@@ -45,12 +45,13 @@ class Polygon {
       //drawing polygon
       c.fillStyle = "yellow";
       c.beginPath();
+      
 
-
-      //I'm adding the position of the polygon to the moveTo because all the vertices are defined in relation to the center of mass
-      c.moveTo((Math.cos(this.angle * Math.PI / 180) * this.vertices.x[0]) - (Math.sin(this.angle * Math.PI / 180) * this.vertices.y[0]) + this.position.x, (Math.sin(this.angle * Math.PI / 180) * this.vertices.x[0]) - (Math.cos(this.angle * Math.PI / 180) * this.vertices.y[0]) + this.position.y);
+      let pos = rotate(this.position.x, this.position.y, this.vertices.x[0], this.vertices.y[0], this.angle);
+      c.moveTo(pos[0], pos[1]);
       for (let i = 1; i < this.vertices.x.length; i++) {
-         c.lineTo((Math.cos(this.angle * Math.PI / 180) * this.vertices.x[i]) - (Math.sin(this.angle * Math.PI / 180) * this.vertices.y[i]) + this.position.x, (Math.sin(this.angle * Math.PI / 180) * this.vertices.x[i]) - (Math.cos(this.angle * Math.PI / 180) * this.vertices.y[i]) + this.position.y);
+         let pos = rotate(this.position.x, this.position.y, this.vertices.x[i], this.vertices.y[i], this.angle);
+         c.lineTo(pos[0], pos[1]);
       }
       c.closePath();
       c.fill();
@@ -103,6 +104,15 @@ class Polygon {
 
 polygon = new Polygon();
 
+function rotate(cx, cy, x, y, angle) {
+   var radians = (Math.PI / 180) * angle,
+      cos = Math.cos(radians),
+      sin = Math.sin(radians),
+      nx = (cos * (x)) + (sin * (y)) + cx,
+      ny = (cos * (y)) - (sin * (x)) + cy;
+   return [nx, ny];
+}
+
 //this is the main function that runs the entire game
 function game() {
    c.clearRect(0, 0, canvas.width, canvas.height);
@@ -136,7 +146,7 @@ window.addEventListener("keydown", function (event) {
 
       case "c":
          //polygon.velocity.y = 1;
-         polygon.angle += 1;
+         polygon.angle += 5;
          break;
 
       default:
