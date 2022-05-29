@@ -32,6 +32,7 @@ class Polygon {
       this.angularVelocity = 0;
       this.angularMomentum = 0;
       this.mass = 1;
+      this.gravity = false;
       
 
 
@@ -39,7 +40,9 @@ class Polygon {
    }
 
    update() {
-      //this.velocity.y += 0.5;
+      if (this.gravity === true) {
+         this.velocity.y += 0.5;
+      }
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
       this.angle += this.angularVelocity;
@@ -48,7 +51,6 @@ class Polygon {
       let radians = (Math.PI / 180) * this.angle;
          let cos = Math.cos(radians);
          let sin = Math.sin(radians);
-      console.log(this.angle, radians, cos, sin);
 
       for (let i = 0; i < this.vertices.x.length; i++) {
          this.vertexCoords.x[i] = (cos * this.vertices.x[i]) + (sin * this.vertices.y[i]) + this.position.x;
@@ -63,10 +65,18 @@ class Polygon {
                rotational linear velocity (like the distance travelled per frame) and making it into the rotational
                speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
                */
-               let linearAngularVelocity = this.vertices.x[i] * this.velocity.y;//linear velocity
-               this.angularVelocity += linearAngularVelocity / this.vertices.radius[i]; //angular velocity is linear velocity divided by the radius
+               let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.velocity.y;//linear velocity
+               this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 10); //angular velocity is linear velocity divided by the radius
                this.velocity.y *= -1;
+               
             }
+            //making it so the object is no longer colliding
+            while (this.vertexCoords.y[i] > canvas.height) {
+               //change position
+               this.position.y--;
+               //check again for collision
+               this.vertexCoords.y[i] = (cos * this.vertices.y[i]) - (sin * this.vertices.x[i]) + this.position.y;
+               }
          }
       }
       //do stuff to the polygon
@@ -175,8 +185,7 @@ window.addEventListener("keydown", function (event) {
    switch (event.key) {
 
       case "c":
-         polygon.velocity.y = 1;
-         polygon.rotationalVelocity = 1;
+         polygon.gravity = true;
          break;
 
       default:
