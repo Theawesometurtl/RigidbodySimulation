@@ -42,18 +42,18 @@ class Polygon {
       //this.velocity.y += 0.5;
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
-      this.angle += this.rotationalVelocity;
+      this.angle += this.angularVelocity;
 
       //find the vertices of the polygon using the centroid and rotate, then check for collisions
       let radians = (Math.PI / 180) * this.angle;
          let cos = Math.cos(radians);
          let sin = Math.sin(radians);
-      
+      console.log(this.angle, radians, cos, sin);
 
       for (let i = 0; i < this.vertices.x.length; i++) {
          this.vertexCoords.x[i] = (cos * this.vertices.x[i]) + (sin * this.vertices.y[i]) + this.position.x;
          this.vertexCoords.y[i] = (cos * this.vertices.y[i]) - (sin * this.vertices.x[i]) + this.position.y;
-         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertices.x[i], this.vertices.y[i], this.position.x, this.position.y);
+         
          
          //check for collisions
          if (this.vertexCoords.y[i] > canvas.height) {
