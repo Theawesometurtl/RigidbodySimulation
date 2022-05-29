@@ -9,7 +9,13 @@ class Polygon {
    constructor() {
       this.vertices = {
          x : [],
-         y : []
+         y: [],
+         radius: []
+      };
+
+      this.vertexCoords = {
+         x: [],
+         y: []
       };
       this.vertexSize = 5;
 
@@ -23,18 +29,46 @@ class Polygon {
          y: -10
       };
       this.angle = 0;
+      this.angularVelocity = 0;
+      this.angularMomentum = 0;
+      this.mass = 1;
+      
+
+
 
    }
 
    update() {
+      //this.velocity.y += 0.5;
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
+      this.angle += this.rotationalVelocity;
 
-      //find the vertices of the polygon using the centroid and check for collisions
-      for (let i = 0; i < this.vertices.length; i++) {
+      //find the vertices of the polygon using the centroid and rotate, then check for collisions
+      let radians = (Math.PI / 180) * this.angle;
+         let cos = Math.cos(radians);
+         let sin = Math.sin(radians);
+      
+
+      for (let i = 0; i < this.vertices.x.length; i++) {
+         this.vertexCoords.x[i] = (cos * this.vertices.x[i]) + (sin * this.vertices.y[i]) + this.position.x;
+         this.vertexCoords.y[i] = (cos * this.vertices.y[i]) - (sin * this.vertices.x[i]) + this.position.y;
+         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertices.x[i], this.vertices.y[i], this.position.x, this.position.y);
          
+         //check for collisions
+         if (this.vertexCoords.y[i] > canvas.height) {
+            if (this.velocity.y > 0) {
+               /*
+               I'm going to be stupid and for now the rotational velocity is going to be calculated by taking the
+               rotational linear velocity (like the distance travelled per frame) and making it into the rotational
+               speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
+               */
+               let linearAngularVelocity = this.vertices.x[i] * this.velocity.y;//linear velocity
+               this.angularVelocity += linearAngularVelocity / this.vertices.radius[i]; //angular velocity is linear velocity divided by the radius
+               this.velocity.y *= -1;
+            }
+         }
       }
-
       //do stuff to the polygon
 
       
@@ -47,11 +81,10 @@ class Polygon {
       c.beginPath();
       
 
-      let pos = rotate(this.position.x, this.position.y, this.vertices.x[0], this.vertices.y[0], this.angle);
-      c.moveTo(pos[0], pos[1]);
+      
+      c.moveTo(this.vertexCoords.x[0], this.vertexCoords.y[0]);
       for (let i = 1; i < this.vertices.x.length; i++) {
-         let pos = rotate(this.position.x, this.position.y, this.vertices.x[i], this.vertices.y[i], this.angle);
-         c.lineTo(pos[0], pos[1]);
+         c.lineTo(this.vertexCoords.x[i], this.vertexCoords.y[i]);
       }
       c.closePath();
       c.fill();
@@ -64,7 +97,8 @@ class Polygon {
       //drawing vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
          c.fillStyle = "green";
-         c.fillRect(this.vertices.x[i] + this.position.x, this.vertices.y[i] + this.position.y, this.vertexSize, this.vertexSize)
+         c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
+         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i]);
       }
 
    }
@@ -95,6 +129,7 @@ class Polygon {
       for (let i = 0; i < this.vertices.x.length; i++) { 
          this.vertices.x[i] -= this.position.x;
          this.vertices.y[i] -= this.position.y;
+         this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i]** 2)
       }
 
    }
@@ -105,12 +140,7 @@ class Polygon {
 polygon = new Polygon();
 
 function rotate(cx, cy, x, y, angle) {
-   var radians = (Math.PI / 180) * angle,
-      cos = Math.cos(radians),
-      sin = Math.sin(radians),
-      nx = (cos * (x)) + (sin * (y)) + cx,
-      ny = (cos * (y)) - (sin * (x)) + cy;
-   return [nx, ny];
+   
 }
 
 //this is the main function that runs the entire game
@@ -145,8 +175,8 @@ window.addEventListener("keydown", function (event) {
    switch (event.key) {
 
       case "c":
-         //polygon.velocity.y = 1;
-         polygon.angle += 5;
+         polygon.velocity.y = 1;
+         polygon.rotationalVelocity = 1;
          break;
 
       default:
