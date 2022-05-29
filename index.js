@@ -29,17 +29,14 @@ class Polygon {
          y: -10
       };
       this.angle = 0;
-      this.angularVelocity = 0;
-      this.angularMomentum = 0;
+      this.rotationalVelocity = 0;
+      this.rotationalMomentum = 0;
       this.mass = 1;
-      
-
-
 
    }
 
    update() {
-      //this.velocity.y += 0.5;
+      this.velocity.y += 0.5;
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
       this.angle += this.rotationalVelocity;
@@ -51,9 +48,8 @@ class Polygon {
       
 
       for (let i = 0; i < this.vertices.x.length; i++) {
-         this.vertexCoords.x[i] = (cos * this.vertices.x[i]) + (sin * this.vertices.y[i]) + this.position.x;
-         this.vertexCoords.y[i] = (cos * this.vertices.y[i]) - (sin * this.vertices.x[i]) + this.position.y;
-         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertices.x[i], this.vertices.y[i], this.position.x, this.position.y);
+         this.vertexCoords.x[i] = ((cos * (this.vertices.x[i])) + (sin * (this.vertices.y[i])) + this.position.x);
+         this.vertexCoords.y[i] = ((cos * (this.vertices.y[i])) - (sin * (this.vertices.x[i])) + this.position.y);
          
          //check for collisions
          if (this.vertexCoords.y[i] > canvas.height) {
@@ -64,7 +60,7 @@ class Polygon {
                speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
                */
                let linearAngularVelocity = this.vertices.x[i] * this.velocity.y;//linear velocity
-               this.angularVelocity += linearAngularVelocity / this.vertices.radius[i]; //angular velocity is linear velocity divided by the radius
+               this.rotationalVelocity += linearAngularVelocity / this.vertices.radius[i]; //angular velocity is linear velocity divided by the radius
                this.velocity.y *= -1;
             }
          }
@@ -98,7 +94,7 @@ class Polygon {
       for (let i = 0; i < this.vertices.x.length; i++) {
          c.fillStyle = "green";
          c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
-         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i]);
+         //console.log(i)
       }
 
    }
@@ -129,7 +125,6 @@ class Polygon {
       for (let i = 0; i < this.vertices.x.length; i++) { 
          this.vertices.x[i] -= this.position.x;
          this.vertices.y[i] -= this.position.y;
-         this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i]** 2)
       }
 
    }
