@@ -32,7 +32,7 @@ class Polygon {
       this.angularVelocity = 0;
       this.angularMomentum = 0;
       this.mass = 1;
-      this.gravity = false;
+      this.simulation = false;
       
 
 
@@ -40,7 +40,7 @@ class Polygon {
    }
 
    update() {
-      if (this.gravity === true) {
+      if (this.simulation === true) {
          this.velocity.y += 0.5;
       }
       this.position.x += this.velocity.x;
@@ -141,7 +141,34 @@ class Polygon {
          this.vertices.y[i] -= this.position.y;
          this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i]** 2)
       }
+   }
+   reset() {
+      this.vertices = {
+         x : [],
+         y: [],
+         radius: []
+      };
 
+      this.vertexCoords = {
+         x: [],
+         y: []
+      };
+      this.vertexSize = 5;
+
+      this.velocity = {
+         x: 0,
+         y: 0
+      };
+
+      this.position = {
+         x: -10,
+         y: -10
+      };
+      this.angle = 0;
+      this.angularVelocity = 0;
+      this.angularMomentum = 0;
+      this.mass = 1;
+      this.simulation = false;
    }
 
 
@@ -168,8 +195,9 @@ function printMousePos(event) {
    //needed to get mouse position relative to the canvas
    var rect = canvas.getBoundingClientRect();
    //adding mouse position to list of vertices
-   
-   polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top)
+   if (polygon.simulation === false) {
+      polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top)
+   }
    console.log(event.clientX - rect.left, event.clientY - rect.top);
    
  }
@@ -184,8 +212,14 @@ window.addEventListener("keydown", function (event) {
  
    switch (event.key) {
 
-      case "c":
-         polygon.gravity = true;
+      case "s":
+         polygon.simulation = true;
+         break;
+      
+      case "r":
+         polygon.simulation = false;
+         polygon.reset();
+
          break;
 
       default:
