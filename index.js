@@ -23,8 +23,8 @@ class Polygon {
 
       this.boundingBox = {
          xmin: 0,
-         ymax: 0,
-         xmin: 0,
+         ymin: 0,
+         xmax: 0,
          ymax: 0,
       }
 
@@ -185,10 +185,10 @@ class Polygon {
          if (this.vertices.y[i] < this.boundingBox.ymin) {
             this.boundingBox.ymin = this.vertices.x[i]
          }
-         if (this.vertices.x[i] < this.boundingBox.xmax) {
+         if (this.vertices.x[i] > this.boundingBox.xmax) {
             this.boundingBox.xmax = this.vertices.x[i]
          }
-         if (this.vertices.x[i] < this.boundingBox.ymax) {
+         if (this.vertices.x[i] > this.boundingBox.ymax) {
             this.boundingBox.ymax = this.vertices.x[i]
          }
       }
@@ -203,14 +203,20 @@ class Polygon {
       */
       
 
-      let boundingBoxArea = this.boundingBox.xmax - this.boundingBox.xmin * this.boundingBox.ymax - this.boundingBox.ymin;
+      
       let rows = this.boundingBox.xmax + 1 - this.boundingBox.xmin;
       let columns = this.boundingBox.ymax + 1 - this.boundingBox.ymin;
+      let boundingBoxArea = (rows - 1) * (columns - 1);
+      console.log(boundingBoxArea);
       let average = 0;
       for (let r = 0; r < rows; r++) {
+         console.log(r);
          for (let c = 0; c < columns; c++) {
-            if (this.raycasting(r, rows, c, columns, this.polygon) = 'Collision') {
+            console.log(c);
+            console.log(this.raycasting(r, rows, c, columns, polygon));
+            if (this.raycasting(r, rows, c, columns, polygon) === 'Collision') {
                average += Math.sqrt(r ** 2 + c ** 2);//Pythagorean thearom thearum theorum
+               //console.log(average)
             }
             
          }
@@ -219,20 +225,22 @@ class Polygon {
       moment of inertia is I = mr**2 so what I'm doing is getting the moment of inertia for a ton of point masses
       and I'm averaging them out
       */
-      this.momentOfInertia = (average / boundingBoxArea) * mass;
+      this.momentOfInertia = (average / boundingBoxArea) * this.mass;
+      console.log(this.momentOfInertia);
 
    }
    /*
    the colidingPolygon perameter in my raycasting function is the other polygon that would be
     involved in the collision (it could also be this polygon to check if a pixel is inside the polygon or not)
     */
-   raycasting(x1, x2, y1,y2, colidingPolygon) {
+   raycasting(x1, x2, y1,y2, collidingPolygon) {
       let a1 = x2 - x1;
       let b1 = y2 - y1;
       let c1 = (x1 * y2) - (x2 * y1); //linear equation: ax + by + c = 0
       let equation1 = 0;
       let equation2 = 0;
-      let arrayLength = colidingPolygon.vertices.x.length;
+      let arrayLength = collidingPolygon.vertices.x.length;
+      let collisions = 0;
 
 
       //this checks for collisions iterating over every line seperately and filling out the linear equation
@@ -244,8 +252,8 @@ class Polygon {
             add = arrayLength - 1;
          }
 
-         equation1 = (a1 * colidingPolygon.vertices.x[i]) + (b1 * colidingPolygon.vertices.y[i]) + c1;
-         equation2 = (a1 * colidingPolygon.vertices.x[i + add]) + (b1 * colidingPolygon.vertices.y[i + add]) + c1;
+         equation1 = (a1 * collidingPolygon.vertices.x[i]) + (b1 * collidingPolygon.vertices.y[i]) + c1;
+         equation2 = (a1 * collidingPolygon.vertices.x[i + add]) + (b1 * collidingPolygon.vertices.y[i + add]) + c1;
 
          if (equation1 > 0 && equation2 > 0) {
             continue;
@@ -257,12 +265,12 @@ class Polygon {
 
 
 
-         a2 = colidingPolygon.vertices.x[i + add] - colidingPolygon.vertices.x[i];
-         b2 = colidingPolygon.vertices.y[i + add] - colidingPolygon.vertices.y[i];
-         c2 = (colidingPolygon.vertices.x[i] * colidingPolygon.vertices.y[i + add]) - (colidingPolygon.vertices.x[i + add] * colidingPolygon.vertices.y[i])
+         let a2 = collidingPolygon.vertices.x[i + add] - collidingPolygon.vertices.x[i];
+         let b2 = collidingPolygon.vertices.y[i + add] - collidingPolygon.vertices.y[i];
+         let c2 = (collidingPolygon.vertices.x[i] * collidingPolygon.vertices.y[i + add]) - (collidingPolygon.vertices.x[i + add] * collidingPolygon.vertices.y[i])
          
-         equation1 = (a * x1) + (b * y1) + c;
-         equation2 = (a * x2) + (b * y2) + c;
+         equation1 = (a2 * x1) + (b2 * y1) + c2;
+         equation2 = (a2 * x2) + (b2 * y2) + c2;
 
          if (equation1 > 0 && equation2 > 0) {
             continue;
@@ -276,10 +284,15 @@ class Polygon {
             return 'Collinear';
          }
 
-         return 'Collision';
+         collisions += 1;
 
       }
-      return 'Nothing';
+      if (collisions % 2 === 0) {
+         return 'Collision';
+      } else {
+         return 'Nothing'
+      }
+      
    }
    reset() {
       this.vertices = {
