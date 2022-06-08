@@ -40,6 +40,7 @@ class Polygon {
       this.angle = 0;
       this.angularVelocity = 0;
       this.angularMomentum = 0;
+      this.momentOfInertia = 0;
       this.mass = 1;
       this.simulation = false;
       
@@ -202,11 +203,23 @@ class Polygon {
       */
       
 
-      for (let i = 0; i < inertiaCalculations; i++) {
-         
-         
+      let boundingBoxArea = this.boundingBox.xmax - this.boundingBox.xmin * this.boundingBox.ymax - this.boundingBox.ymin;
+      let rows = this.boundingBox.xmax + 1 - this.boundingBox.xmin;
+      let columns = this.boundingBox.ymax + 1 - this.boundingBox.ymin;
+      let average = 0;
+      for (let r = 0; r < rows; r++) {
+         for (let c = 0; c < columns; c++) {
+            if (this.raycasting(r, rows, c, columns, this.polygon) = 'Collision') {
+               average += Math.sqrt(r ** 2 + c ** 2);//Pythagorean thearom thearum theorum
+            }
+            
+         }
       }
-
+      /*
+      moment of inertia is I = mr**2 so what I'm doing is getting the moment of inertia for a ton of point masses
+      and I'm averaging them out
+      */
+      this.momentOfInertia = (average / boundingBoxArea) * mass;
 
    }
    /*
@@ -260,13 +273,13 @@ class Polygon {
 
          if ((a1 * b2) - (a2 * b1) == 0) {
             console.log('Collinear!!!!!!!!!!!!!!!!!');
-            return Collinear;
+            return 'Collinear';
          }
 
-         return Collision
+         return 'Collision';
 
       }
-      return Nothing
+      return 'Nothing';
    }
    reset() {
       this.vertices = {
