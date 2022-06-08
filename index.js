@@ -21,6 +21,13 @@ class Polygon {
       };
       this.vertexSize = 5;
 
+      this.boundingBox = {
+         xmin: 0,
+         ymax: 0,
+         xmin: 0,
+         ymax: 0,
+      }
+
       this.velocity = {
          x: 0,
          y: 0
@@ -61,17 +68,41 @@ class Polygon {
          
          //check for collisions
          if (this.vertexCoords.y[i] > canvas.height) {
-            if (this.velocity.y > 0) {
-               /*
-               I'm going to be stupid and for now the rotational velocity is going to be calculated by taking the
-               rotational linear velocity (like the distance travelled per frame) and making it into the rotational
-               speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
-               */
-               let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.velocity.y;//linear velocity
-               this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 10); //angular velocity is linear velocity divided by the radius
-               this.velocity.y *= -1;
-               
-            }
+            /*
+            I'm going to be stupid and for now the rotational velocity is going to be calculated by taking the
+            rotational linear velocity (like the distance travelled per frame) and making it into the rotational
+            speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
+            */
+            //let velocity = this.velocity.y;
+            let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.angularVelocity;//linear velocity
+            this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 5); //angular velocity is linear velocity divided by the radius
+            this.velocity.y *= -1;
+            this.velocity.x = this.angularVelocity * -1;
+            
+            /*
+            this will take the x and y velocity and make it into one velocity and find the angle it
+            will be at as well
+            */
+            //let linearAngularMomentum = linearAngularVelocity 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //let velocity = Math.sqrt(this.velocity.y ** 2 + this.velocity.x ** 2);
+            //let angleVelocity = Math.arccos(velocity.x / velocity);
+            
+
             //making it so the object is no longer colliding
             while (this.vertexCoords.y[i] > canvas.height) {
                //change position
@@ -116,7 +147,7 @@ class Polygon {
 
    }
 
-   addVertex(x, y) {
+   addVertex(x, y, inertiaCalculations) {
       //finding absolute coords of vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
          this.vertices.x[i] += this.position.x;
@@ -142,8 +173,100 @@ class Polygon {
       for (let i = 0; i < this.vertices.x.length; i++) { 
          this.vertices.x[i] -= this.position.x;
          this.vertices.y[i] -= this.position.y;
-         this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i]** 2)
+         this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i] ** 2)
       }
+
+      //bounding box
+      for (let i = 0; i < this.vertices.x.length; i++) {
+         if (this.vertices.x[i] < this.boundingBox.xmin) {
+            this.boundingBox.xmin = this.vertices.x[i]
+         }
+         if (this.vertices.y[i] < this.boundingBox.ymin) {
+            this.boundingBox.ymin = this.vertices.x[i]
+         }
+         if (this.vertices.x[i] < this.boundingBox.xmax) {
+            this.boundingBox.xmax = this.vertices.x[i]
+         }
+         if (this.vertices.x[i] < this.boundingBox.ymax) {
+            this.boundingBox.ymax = this.vertices.x[i]
+         }
+      }
+
+      /*
+      find the moment of inertia by brute force averaging the force for every pixel of the polygon
+      I wonder how stupid it will be to use raycasting to check whether every pixel is inside the polygon
+
+      SoS (simulation of simplicity) has a better solution I am just to lazy to try to implement it. I
+      need the raycasting anyways, but don't want to copy paste some rando code in case it goes wrong without
+      understanding it
+      */
+      
+
+      for (let i = 0; i < inertiaCalculations; i++) {
+         
+         
+      }
+
+
+   }
+   /*
+   the colidingPolygon perameter in my raycasting function is the other polygon that would be
+    involved in the collision (it could also be this polygon to check if a pixel is inside the polygon or not)
+    */
+   raycasting(x1, x2, y1,y2, colidingPolygon) {
+      let a1 = x2 - x1;
+      let b1 = y2 - y1;
+      let c1 = (x1 * y2) - (x2 * y1); //linear equation: ax + by + c = 0
+      let equation1 = 0;
+      let equation2 = 0;
+      let arrayLength = colidingPolygon.vertices.x.length;
+
+
+      //this checks for collisions iterating over every line seperately and filling out the linear equation
+      for (let i = 0; i < arrayLength; i++) {
+         //this is so the vertices list doesn't go out of range on the last iteration 
+         let add = 1
+
+         if (i === arrayLength - 1) {
+            add = arrayLength - 1;
+         }
+
+         equation1 = (a1 * colidingPolygon.vertices.x[i]) + (b1 * colidingPolygon.vertices.y[i]) + c1;
+         equation2 = (a1 * colidingPolygon.vertices.x[i + add]) + (b1 * colidingPolygon.vertices.y[i + add]) + c1;
+
+         if (equation1 > 0 && equation2 > 0) {
+            continue;
+         }
+         if (equation1 < 0 && equation2 < 0) {
+            continue;
+         }
+
+
+
+
+         a2 = colidingPolygon.vertices.x[i + add] - colidingPolygon.vertices.x[i];
+         b2 = colidingPolygon.vertices.y[i + add] - colidingPolygon.vertices.y[i];
+         c2 = (colidingPolygon.vertices.x[i] * colidingPolygon.vertices.y[i + add]) - (colidingPolygon.vertices.x[i + add] * colidingPolygon.vertices.y[i])
+         
+         equation1 = (a * x1) + (b * y1) + c;
+         equation2 = (a * x2) + (b * y2) + c;
+
+         if (equation1 > 0 && equation2 > 0) {
+            continue;
+         }
+         if (equation1 < 0 && equation2 < 0) {
+            continue;
+         }
+
+         if ((a1 * b2) - (a2 * b1) == 0) {
+            console.log('Collinear!!!!!!!!!!!!!!!!!');
+            return Collinear;
+         }
+
+         return Collision
+
+      }
+      return Nothing
    }
    reset() {
       this.vertices = {
@@ -179,9 +302,6 @@ class Polygon {
 
 polygon = new Polygon();
 
-function rotate(cx, cy, x, y, angle) {
-   
-}
 
 //this is the main function that runs the entire game
 function game() {
@@ -199,7 +319,7 @@ function printMousePos(event) {
    var rect = canvas.getBoundingClientRect();
    //adding mouse position to list of vertices
    if (polygon.simulation === false) {
-      polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top)
+      polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top, 1)
    }
    console.log(event.clientX - rect.left, event.clientY - rect.top);
    
