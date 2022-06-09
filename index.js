@@ -1,5 +1,5 @@
 const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -123,27 +123,27 @@ class Polygon {
    draw() {
       
       //drawing polygon
-      c.fillStyle = "yellow";
-      c.beginPath();
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
       
 
       
-      c.moveTo(this.vertexCoords.x[0], this.vertexCoords.y[0]);
+      ctx.moveTo(this.vertexCoords.x[0], this.vertexCoords.y[0]);
       for (let i = 1; i < this.vertices.x.length; i++) {
-         c.lineTo(this.vertexCoords.x[i], this.vertexCoords.y[i]);
+         ctx.lineTo(this.vertexCoords.x[i], this.vertexCoords.y[i]);
       }
-      c.closePath();
-      c.fill();
+      ctx.closePath();
+      ctx.fill();
 
       //drawing centroid(center of mass)
-      c.fillStyle = "red";
-      c.fillRect(this.position.x, this.position.y, this.vertexSize, this.vertexSize)
+      ctx.fillStyle = "red";
+      ctx.fillRect(this.position.x, this.position.y, this.vertexSize, this.vertexSize)
 
 
       //drawing vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
-         c.fillStyle = "green";
-         c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
+         ctx.fillStyle = "green";
+         ctx.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
       }
 
    }
@@ -215,6 +215,8 @@ class Polygon {
             console.log(c);
             console.log(this.raycasting(r, rows, c, columns, polygon));
             if (this.raycasting(r, rows, c, columns, polygon) === 'Collision') {
+               ctx.fillStyle = "green";
+               ctx.fillRect( r + this.position.x, c + this.position.y, 1, 1 );
                average += Math.sqrt(r ** 2 + c ** 2);//Pythagorean thearom thearum theorum
                //console.log(average)
             }
@@ -331,9 +333,9 @@ polygon = new Polygon();
 
 //this is the main function that runs the entire game
 function game() {
-   c.clearRect(0, 0, canvas.width, canvas.height);
+   //ctx.clearRect(0, 0, canvas.width, canvas.height);
    polygon.update();
-   polygon.draw();
+   //polygon.draw();
 }
 
  
