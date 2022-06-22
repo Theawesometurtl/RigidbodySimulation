@@ -183,13 +183,13 @@ class Polygon {
             this.boundingBox.xmin = this.vertices.x[i]
          }
          if (this.vertices.y[i] < this.boundingBox.ymin) {
-            this.boundingBox.ymin = this.vertices.x[i]
+            this.boundingBox.ymin = this.vertices.y[i]
          }
          if (this.vertices.x[i] > this.boundingBox.xmax) {
             this.boundingBox.xmax = this.vertices.x[i]
          }
          if (this.vertices.x[i] > this.boundingBox.ymax) {
-            this.boundingBox.ymax = this.vertices.x[i]
+            this.boundingBox.ymax = this.vertices.y[i]
          }
       }
 
@@ -204,17 +204,17 @@ class Polygon {
       
 
       
-      let rows = this.boundingBox.xmax + 1 - this.boundingBox.xmin;
-      let columns = this.boundingBox.ymax + 1 - this.boundingBox.ymin;
-      let boundingBoxArea = (rows - 1) * (columns - 1);
+      let rows = this.boundingBox.xmax - this.boundingBox.xmin;
+      let columns = this.boundingBox.ymax - this.boundingBox.ymin;
+      let boundingBoxArea = (rows) * (columns);
       console.log(boundingBoxArea);
       let average = 0;
-      for (let r = 0; r < rows; r++) {
+      for (let r = this.boundingBox.xmin - 1; r < this.boundingBox.xmax + 1; r++) {
          console.log(r);
-         for (let c = 0; c < columns; c++) {
-            console.log(c);
-            console.log(this.raycasting(r, rows, c, columns, polygon));
-            if (this.raycasting(r, rows, c, columns, polygon) === 'Collision') {
+         for (let c = this.boundingBox.ymin - 1; c < this.boundingBox.ymax + 1; c++) {
+            //console.log(c);
+            console.log(this.raycasting(r, this.boundingBox.xmax + 1, c, c, polygon));
+            if (this.raycasting(r, this.boundingBox.xmax + 1, c, c, polygon) === 'Collision') {
                ctx.fillStyle = "green";
                ctx.fillRect( r + this.position.x, c + this.position.y, 1, 1 );
                average += Math.sqrt(r ** 2 + c ** 2);//Pythagorean thearom thearum theorum
@@ -290,9 +290,9 @@ class Polygon {
 
       }
       if (collisions % 2 === 0) {
-         return 'Collision';
+         return 'Nothing';
       } else {
-         return 'Nothing'
+         return 'Collision'
       }
       
    }
