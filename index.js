@@ -149,6 +149,8 @@ class Polygon {
    }
 
    addVertex(x, y, inertiaCalculations) {
+      //for testing
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       //finding absolute coords of vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
          this.vertices.x[i] += this.position.x;
@@ -177,7 +179,7 @@ class Polygon {
          this.vertices.radius[i] = Math.sqrt(this.vertices.x[i] ** 2 + this.vertices.y[i] ** 2)
       }
 
-      //bounding box
+      //bounding box is defined relative to centroid
       for (let i = 0; i < this.vertices.x.length; i++) {
          if (this.vertices.x[i] < this.boundingBox.xmin) {
             this.boundingBox.xmin = this.vertices.x[i]
@@ -186,9 +188,9 @@ class Polygon {
             this.boundingBox.ymin = this.vertices.y[i]
          }
          if (this.vertices.x[i] > this.boundingBox.xmax) {
-            this.boundingBox.xmax = this.vertices.x[i]
+            this.boundingBox.xmax = this.vertices.x[i];
          }
-         if (this.vertices.x[i] > this.boundingBox.ymax) {
+         if (this.vertices.y[i] > this.boundingBox.ymax) {
             this.boundingBox.ymax = this.vertices.y[i]
          }
       }
@@ -229,15 +231,16 @@ class Polygon {
       */
       this.momentOfInertia = (average / boundingBoxArea) * this.mass;
       console.log(this.momentOfInertia);
-
+      ctx.fillStyle = 'green'
+      ctx.fillRect(this.boundingBox.xmin, this.boundingBox.ymin, this.boundingBox.xmax, this.boundingBox.ymax)
    }
    /*
    the colidingPolygon perameter in my raycasting function is the other polygon that would be
     involved in the collision (it could also be this polygon to check if a pixel is inside the polygon or not)
     */
    raycasting(x1, x2, y1,y2, collidingPolygon) {
-      let a1 = x2 - x1;
-      let b1 = y2 - y1;
+      let b1 = x2 - x1;
+      let a1 = y2 - y1;
       let c1 = (x1 * y2) - (x2 * y1); //linear equation: ax + by + c = 0
       let equation1 = 0;
       let equation2 = 0;
@@ -267,8 +270,8 @@ class Polygon {
 
 
 
-         let a2 = collidingPolygon.vertices.x[i + add] - collidingPolygon.vertices.x[i];
-         let b2 = collidingPolygon.vertices.y[i + add] - collidingPolygon.vertices.y[i];
+         let b2 = collidingPolygon.vertices.x[i + add] - collidingPolygon.vertices.x[i];
+         let a2 = collidingPolygon.vertices.y[i + add] - collidingPolygon.vertices.y[i];
          let c2 = (collidingPolygon.vertices.x[i] * collidingPolygon.vertices.y[i + add]) - (collidingPolygon.vertices.x[i + add] * collidingPolygon.vertices.y[i])
          
          equation1 = (a2 * x1) + (b2 * y1) + c2;
@@ -350,6 +353,9 @@ function printMousePos(event) {
       polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top, 1)
    }
    console.log(event.clientX - rect.left, event.clientY - rect.top);
+   //used during testing, not imporant
+   ctx.fillStyle = "red";
+   ctx.fillRect(event.clientX - rect.left, event.clientY - rect.top, 1, 1)
    
  }
  //checking for mouse click event
