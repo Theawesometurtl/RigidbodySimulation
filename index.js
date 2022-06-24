@@ -5,8 +5,6 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 
-
-
 class Polygon {
    constructor() {
       this.vertices = {
@@ -110,9 +108,7 @@ class Polygon {
                this.position.y--;
                //check again for collision
                this.vertexCoords.y[i] = (cos * this.vertices.y[i]) - (sin * this.vertices.x[i]) + this.position.y;
-            }
-            const bounceSound = document.getElementById("bounce"); 
-            bounceSound.play();
+               }
          }
       }
       //do stuff to the polygon
@@ -142,8 +138,14 @@ class Polygon {
 
       //drawing vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
+<<<<<<< HEAD
          ctx.fillStyle = "green";
          ctx.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
+=======
+         c.fillStyle = "green";
+         c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
+         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i]);
+>>>>>>> parent of b50cd2a (now with sound!)
       }
 
    }
