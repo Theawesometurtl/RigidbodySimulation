@@ -138,14 +138,9 @@ class Polygon {
 
       //drawing vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
-<<<<<<< HEAD
-         ctx.fillStyle = "green";
-         ctx.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
-=======
          c.fillStyle = "green";
          c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
          console.log(this.vertexCoords.x[i], this.vertexCoords.y[i]);
->>>>>>> parent of b50cd2a (now with sound!)
       }
 
    }
