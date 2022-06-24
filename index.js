@@ -180,18 +180,18 @@ class Polygon {
       }
 
       //bounding box is defined relative to centroid
-      for (let i = 0; i < this.vertices.x.length; i++) {
+      for (let i = -1; i < this.vertices.x.length; i++) {
          if (this.vertices.x[i] < this.boundingBox.xmin) {
-            this.boundingBox.xmin = this.vertices.x[i]
+            this.boundingBox.xmin = this.vertices.x[i] + this.position.x;
          }
          if (this.vertices.y[i] < this.boundingBox.ymin) {
-            this.boundingBox.ymin = this.vertices.y[i]
+            this.boundingBox.ymin = this.vertices.y[i] + this.position.y;
          }
          if (this.vertices.x[i] > this.boundingBox.xmax) {
-            this.boundingBox.xmax = this.vertices.x[i];
+            this.boundingBox.xmax = this.vertices.x[i]; + this.position.x;
          }
          if (this.vertices.y[i] > this.boundingBox.ymax) {
-            this.boundingBox.ymax = this.vertices.y[i]
+            this.boundingBox.ymax = this.vertices.y[i] + this.position.y;
          }
       }
 
@@ -232,7 +232,14 @@ class Polygon {
       this.momentOfInertia = (average / boundingBoxArea) * this.mass;
       console.log(this.momentOfInertia);
       ctx.fillStyle = 'green'
-      ctx.fillRect(this.boundingBox.xmin, this.boundingBox.ymin, this.boundingBox.xmax, this.boundingBox.ymax)
+      //ctx.fillRect(this.boundingBox.xmin, this.boundingBox.ymin, this.boundingBox.xmax, this.boundingBox.ymax);
+      ctx.moveTo(this.boundingBox.xmin, this.boundingBox.ymin);
+      ctx.lineTo(this.boundingBox.xmax, this.boundingBox.ymin);
+      ctx.lineTo(this.boundingBox.xmax, this.boundingBox.ymax);
+      ctx.lineTo(this.boundingBox.xmin, this.boundingBox.ymax);
+
+      ctx.closePath();
+      ctx.fill();
    }
    /*
    the colidingPolygon perameter in my raycasting function is the other polygon that would be
