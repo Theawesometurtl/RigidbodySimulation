@@ -138,9 +138,8 @@ class Polygon {
 
       //drawing vertices
       for (let i = 0; i < this.vertices.x.length; i++) {
-         c.fillStyle = "green";
-         c.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
-         console.log(this.vertexCoords.x[i], this.vertexCoords.y[i]);
+         ctx.fillStyle = "green";
+         ctx.fillRect(this.vertexCoords.x[i], this.vertexCoords.y[i], this.vertexSize, this.vertexSize)
       }
 
    }
@@ -177,19 +176,27 @@ class Polygon {
       }
 
       //bounding box is defined relative to centroid
-      for (let i = -1; i < this.vertices.x.length; i++) {
-         if (this.vertices.x[i] < this.boundingBox.xmin) {
+      this.boundingBox.xmin = this.position.x;
+      this.boundingBox.ymin = this.position.y;
+
+      for (let i = 0; i < this.vertices.x.length; i++) {
+         if (this.vertices.x[i] + this.position.x < this.boundingBox.xmin) {
             this.boundingBox.xmin = this.vertices.x[i] + this.position.x;
+            console.log('xmin');
          }
-         if (this.vertices.y[i] < this.boundingBox.ymin) {
+         if (this.vertices.y[i] + this.position.y < this.boundingBox.ymin) {
             this.boundingBox.ymin = this.vertices.y[i] + this.position.y;
+            console.log('ymin');
          }
-         if (this.vertices.x[i] > this.boundingBox.xmax) {
-            this.boundingBox.xmax = this.vertices.x[i]; + this.position.x;
+         if (this.vertices.x[i] + this.position.x > this.boundingBox.xmax) {
+            this.boundingBox.xmax = this.vertices.x[i] + this.position.x;
+            console.log(this.vertices.x[i] + this.position.x);
          }
-         if (this.vertices.y[i] > this.boundingBox.ymax) {
+         if (this.vertices.y[i] + this.position.y > this.boundingBox.ymax) {
             this.boundingBox.ymax = this.vertices.y[i] + this.position.y;
+            console.log('ymax');
          }
+         
       }
 
       /*
@@ -215,72 +222,64 @@ class Polygon {
             console.log(this.raycasting(r, this.boundingBox.xmax + 1, c, c, polygon));
             if (this.raycasting(r, this.boundingBox.xmax + 1, c, c, polygon) === 'Collision') {
                ctx.fillStyle = "green";
-               ctx.fillRect( r + this.position.x, c + this.position.y, 1, 1 );
+               ctx.fillRect( r, c, 1, 1 );
                average += Math.sqrt(r ** 2 + c ** 2);//Pythagorean thearom thearum theorum
                //console.log(average)
             }
             
          }
       }
+      
       /*
       moment of inertia is I = mr**2 so what I'm doing is getting the moment of inertia for a ton of point masses
       and I'm averaging them out
       */
       this.momentOfInertia = (average / boundingBoxArea) * this.mass;
       console.log(this.momentOfInertia);
+
+      /* code used during debugging of bounding box
       ctx.fillStyle = 'green'
-      //ctx.fillRect(this.boundingBox.xmin, this.boundingBox.ymin, this.boundingBox.xmax, this.boundingBox.ymax);
+      ctx.beginPath();
       ctx.moveTo(this.boundingBox.xmin, this.boundingBox.ymin);
       ctx.lineTo(this.boundingBox.xmax, this.boundingBox.ymin);
       ctx.lineTo(this.boundingBox.xmax, this.boundingBox.ymax);
       ctx.lineTo(this.boundingBox.xmin, this.boundingBox.ymax);
-
       ctx.closePath();
       ctx.fill();
+      */
    }
    /*
    the colidingPolygon perameter in my raycasting function is the other polygon that would be
     involved in the collision (it could also be this polygon to check if a pixel is inside the polygon or not)
     */
-   raycasting(x1, x2, y1,y2, collidingPolygon) {
-      let b1 = x2 - x1;
-      let a1 = y2 - y1;
+    raycasting(x1, x2, y1,y2, colidingPolygon) {
+      let a1 = x2 - x1;
+      let b1 = y2 - y1;
       let c1 = (x1 * y2) - (x2 * y1); //linear equation: ax + by + c = 0
       let equation1 = 0;
       let equation2 = 0;
-      let arrayLength = collidingPolygon.vertices.x.length;
-      let collisions = 0;
-
-
+      let arrayLength = colidingPolygon.vertices.x.length;
       //this checks for collisions iterating over every line seperately and filling out the linear equation
       for (let i = 0; i < arrayLength; i++) {
          //this is so the vertices list doesn't go out of range on the last iteration 
          let add = 1
-
          if (i === arrayLength - 1) {
             add = arrayLength - 1;
          }
-
-         equation1 = (a1 * collidingPolygon.vertices.x[i]) + (b1 * collidingPolygon.vertices.y[i]) + c1;
-         equation2 = (a1 * collidingPolygon.vertices.x[i + add]) + (b1 * collidingPolygon.vertices.y[i + add]) + c1;
-
+         equation1 = (a1 * colidingPolygon.vertices.x[i]) + (b1 * colidingPolygon.vertices.y[i]) + c1;
+         equation2 = (a1 * colidingPolygon.vertices.x[i + add]) + (b1 * colidingPolygon.vertices.y[i + add]) + c1;
          if (equation1 > 0 && equation2 > 0) {
             continue;
          }
          if (equation1 < 0 && equation2 < 0) {
             continue;
          }
-
-
-
-
-         let b2 = collidingPolygon.vertices.x[i + add] - collidingPolygon.vertices.x[i];
-         let a2 = collidingPolygon.vertices.y[i + add] - collidingPolygon.vertices.y[i];
-         let c2 = (collidingPolygon.vertices.x[i] * collidingPolygon.vertices.y[i + add]) - (collidingPolygon.vertices.x[i + add] * collidingPolygon.vertices.y[i])
+         a2 = colidingPolygon.vertices.x[i + add] - colidingPolygon.vertices.x[i];
+         b2 = colidingPolygon.vertices.y[i + add] - colidingPolygon.vertices.y[i];
+         c2 = (colidingPolygon.vertices.x[i] * colidingPolygon.vertices.y[i + add]) - (colidingPolygon.vertices.x[i + add] * colidingPolygon.vertices.y[i])
          
-         equation1 = (a2 * x1) + (b2 * y1) + c2;
-         equation2 = (a2 * x2) + (b2 * y2) + c2;
-
+         equation1 = (a * x1) + (b * y1) + c;
+         equation2 = (a * x2) + (b * y2) + c;
          if (equation1 > 0 && equation2 > 0) {
             continue;
          }
@@ -293,15 +292,10 @@ class Polygon {
             return 'Collinear';
          }
 
-         collisions += 1;
+         return 'Collision';
 
       }
-      if (collisions % 2 === 0) {
-         return 'Nothing';
-      } else {
-         return 'Collision'
-      }
-      
+      return 'Nothing';
    }
    reset() {
       this.vertices = {
@@ -342,7 +336,7 @@ polygon = new Polygon();
 function game() {
    //ctx.clearRect(0, 0, canvas.width, canvas.height);
    polygon.update();
-   //polygon.draw();
+   polygon.draw();
 }
 
  
