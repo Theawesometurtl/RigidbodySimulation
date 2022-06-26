@@ -252,34 +252,45 @@ class Polygon {
    the colidingPolygon perameter in my raycasting function is the other polygon that would be
     involved in the collision (it could also be this polygon to check if a pixel is inside the polygon or not)
     */
-    raycasting(x1, x2, y1,y2, colidingPolygon) {
+   raycasting(x1, x2, y1,y2, collidingPolygon) {
       let a1 = x2 - x1;
       let b1 = y2 - y1;
       let c1 = (x1 * y2) - (x2 * y1); //linear equation: ax + by + c = 0
       let equation1 = 0;
       let equation2 = 0;
-      let arrayLength = colidingPolygon.vertices.x.length;
+      let arrayLength = collidingPolygon.vertices.x.length;
+      let collisions = 0;
+
+
       //this checks for collisions iterating over every line seperately and filling out the linear equation
       for (let i = 0; i < arrayLength; i++) {
          //this is so the vertices list doesn't go out of range on the last iteration 
          let add = 1
+
          if (i === arrayLength - 1) {
             add = arrayLength - 1;
          }
-         equation1 = (a1 * colidingPolygon.vertices.x[i]) + (b1 * colidingPolygon.vertices.y[i]) + c1;
-         equation2 = (a1 * colidingPolygon.vertices.x[i + add]) + (b1 * colidingPolygon.vertices.y[i + add]) + c1;
+
+         equation1 = (a1 * collidingPolygon.vertices.x[i]) + (b1 * collidingPolygon.vertices.y[i]) + c1;
+         equation2 = (a1 * collidingPolygon.vertices.x[i + add]) + (b1 * collidingPolygon.vertices.y[i + add]) + c1;
+
          if (equation1 > 0 && equation2 > 0) {
             continue;
          }
          if (equation1 < 0 && equation2 < 0) {
             continue;
          }
-         a2 = colidingPolygon.vertices.x[i + add] - colidingPolygon.vertices.x[i];
-         b2 = colidingPolygon.vertices.y[i + add] - colidingPolygon.vertices.y[i];
-         c2 = (colidingPolygon.vertices.x[i] * colidingPolygon.vertices.y[i + add]) - (colidingPolygon.vertices.x[i + add] * colidingPolygon.vertices.y[i])
+
+
+
+
+         let a2 = collidingPolygon.vertices.x[i + add] - collidingPolygon.vertices.x[i];
+         let b2 = collidingPolygon.vertices.y[i + add] - collidingPolygon.vertices.y[i];
+         let c2 = (collidingPolygon.vertices.x[i] * collidingPolygon.vertices.y[i + add]) - (collidingPolygon.vertices.x[i + add] * collidingPolygon.vertices.y[i])
          
-         equation1 = (a * x1) + (b * y1) + c;
-         equation2 = (a * x2) + (b * y2) + c;
+         equation1 = (a2 * x1) + (b2 * y1) + c2;
+         equation2 = (a2 * x2) + (b2 * y2) + c2;
+
          if (equation1 > 0 && equation2 > 0) {
             continue;
          }
@@ -292,10 +303,15 @@ class Polygon {
             return 'Collinear';
          }
 
-         return 'Collision';
+         collisions += 1;
 
       }
-      return 'Nothing';
+      if (collisions % 2 === 0) {
+         return 'Nothing';
+      } else {
+         return 'Collision'
+      }
+      
    }
    reset() {
       this.vertices = {
