@@ -15,7 +15,10 @@ class Polygon {
 
       this.vertexCoords = {
          x: [],
-         y: []
+         y: [],
+         //yo im doing this so I can easily calculate the x + y velocity during a yknow collision instead of doing complex math just trig
+         prevX : [],
+         prevY : []
       };
       this.vertexSize = 5;
 
@@ -51,6 +54,11 @@ class Polygon {
       if (this.simulation === true) {
          this.velocity.y += 0.5;
       }
+      //saving the previous coords before stuff changes in case of collision calculation
+      for (let i = 0; i < this.vertexCoords.x.length; i++) {
+         this.vertexCoords.prevX[i] = this.vertexCoords.x[i];
+      }
+
       this.position.x += this.velocity.x;
       this.position.y += this.velocity.y
       this.angle += this.angularVelocity;
@@ -73,10 +81,10 @@ class Polygon {
             speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
             */
             //let velocity = this.velocity.y;
-            let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.angularVelocity;//linear velocity
-            this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 5); //angular velocity is linear velocity divided by the radius
-            this.velocity.y *= -1;
-            this.velocity.x = this.angularVelocity * -1;
+            //let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.angularVelocity;//linear velocity
+            //this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 5); //angular velocity is linear velocity divided by the radius
+            //this.velocity.y *= -1;
+            //this.velocity.x = this.angularVelocity * -1;
             
             /*
             this will take the x and y velocity and make it into one velocity and find the angle it
@@ -85,7 +93,9 @@ class Polygon {
             //let linearAngularMomentum = linearAngularVelocity 
 
 
+            //first real attemp at this
 
+            
 
 
 
@@ -344,8 +354,30 @@ class Polygon {
 
 
 }
-
+let polygonList = [];
 polygon = new Polygon();
+polygonList.append(polygon);
+
+function collisionHandler(object) {
+   for (let i = 0; i < objec.vertices.x.length; i++) {
+      for (let polygons = 0; polygons < polygonList.length; polygons++) {
+         /*if (polygonList[polygons] != currentPolygon) {}*/
+         if (polygon.raycasting(object.vertices.x[i], object.vertices.x[i + 1], object.vertices.y[i],object.vertices.y[i], otherPolygon) === 'Collision') {
+            //this is colliding script
+            //let xKeneticEnergy = object.velocity.x * object.mass;
+            //let yKeneticEnergy = object.velocity.y * object.mass;
+            let angularKeneticEnergy = object.angularVelocity * object.momentOfInertia;
+
+            //so I need to find the linear angular velocity to add that to the x and y velocities I'll just take the previous coords and do trig
+            let xVelocity = object.vertexCoords.x - object.vertexCoords.prevX;
+            let yVelocity = object.vertexCoords.y - object.vertexCoords.prevY;
+            let xKeneticEnergy = xVelocity * object.mass;
+            let yKeneticEnergy = yVelocity * object.mass;
+            
+         }
+      }
+   }
+}
 
 
 //this is the main function that runs the entire game
@@ -359,7 +391,7 @@ function game() {
 setInterval(game, 15);//framerate (milliseconds per run of the main game function)
 
 
-function printMousePos(event) {
+function findMousePos(event) {
    //needed to get mouse position relative to the canvas
    var rect = canvas.getBoundingClientRect();
    //adding mouse position to list of vertices
@@ -367,13 +399,9 @@ function printMousePos(event) {
       polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top, 1)
    }
    console.log(event.clientX - rect.left, event.clientY - rect.top);
-   //used during testing, not imporant
-   ctx.fillStyle = "red";
-   ctx.fillRect(event.clientX - rect.left, event.clientY - rect.top, 1, 1)
-   
  }
  //checking for mouse click event
- canvas.addEventListener("click", printMousePos);
+ canvas.addEventListener("click", findMousePos);
 
 //this is checking for user input
 window.addEventListener("keydown", function (event) {
