@@ -14,7 +14,7 @@ polygonList.push(polygon);
 
 //this is the main function that runs the entire game
 function game() {
-   //ctx.clearRect(0, 0, canvas.width, canvas.height);
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
    polygon.update();
    polygon.draw();
 }

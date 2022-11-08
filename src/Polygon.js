@@ -69,21 +69,22 @@ class Polygon {
              rotational linear velocity (like the distance travelled per frame) and making it into the rotational
              speed. I'm not gonna change the x velocity at all yet. the y velocity will just get flipped
              */
-             //let velocity = this.velocity.y;
-             //let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) * this.angularVelocity;//linear velocity
-             //this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * 5); //angular velocity is linear velocity divided by the radius
-             //this.velocity.y *= -1;
-             //this.velocity.x = this.angularVelocity * -1;
+            let linearAngularVelocity = (this.vertexCoords.x[i] - this.position.x) + this.angularVelocity;//linear velocity
+            this.angularVelocity = linearAngularVelocity / (this.vertices.radius[i] * .25); //angular velocity is linear velocity divided by the radius
+            this.velocity.y *= -1;
+            this.velocity.x = -this.angularVelocity;
+
+            
              
              /*
              this will take the x and y velocity and make it into one velocity and find the angle it
              will be at as well
              */
-             //let linearAngularMomentum = linearAngularVelocity 
+            //let linearAngularMomentum = linearAngularVelocity 
 
-             //let velocity = Math.sqrt(this.velocity.y ** 2 + this.velocity.x ** 2);
-             //let angleVelocity = Math.arccos(velocity.x / velocity);
-             
+            //let velocity = Math.sqrt(this.velocity.y ** 2 + this.velocity.x ** 2);
+            //this.angularVelocity = Math.acos(this.velocity.x / velocity);
+            //console.log(this.angularVelocity, velocity);
  
              //making it so the object is no longer colliding
              while (this.vertexCoords.y[i] > canvas.height) {
@@ -162,19 +163,19 @@ class Polygon {
        for (let i = 0; i < this.vertices.x.length; i++) {
           if (this.vertices.x[i] + this.position.x < this.boundingBox.xmin) {
              this.boundingBox.xmin = this.vertices.x[i] + this.position.x;
-             console.log('xmin');
+             //console.log('xmin');
           }
           if (this.vertices.y[i] + this.position.y < this.boundingBox.ymin) {
              this.boundingBox.ymin = this.vertices.y[i] + this.position.y;
-             console.log('ymin');
+             //console.log('ymin');
           }
           if (this.vertices.x[i] + this.position.x > this.boundingBox.xmax) {
              this.boundingBox.xmax = this.vertices.x[i] + this.position.x;
-             console.log(this.vertices.x[i] + this.position.x);
+             //console.log(this.vertices.x[i] + this.position.x);
           }
           if (this.vertices.y[i] + this.position.y > this.boundingBox.ymax) {
              this.boundingBox.ymax = this.vertices.y[i] + this.position.y;
-             console.log('ymax');
+             //console.log('ymax');
           }
           
        }
@@ -185,13 +186,13 @@ class Polygon {
        let rows = this.boundingBox.xmax - this.boundingBox.xmin;
        let columns = this.boundingBox.ymax - this.boundingBox.ymin;
        let boundingBoxArea = (rows) * (columns);
-       console.log(boundingBoxArea);
+       //console.log(boundingBoxArea);
        let average = 0;
        for (let r = this.boundingBox.xmin - 1; r < this.boundingBox.xmax + 1; r++) {
-          console.log(r);
+          //console.log(r);
           for (let c = this.boundingBox.ymin - 1; c < this.boundingBox.ymax + 1; c++) {
              //console.log(c);
-             console.log(raycasting(r, this.boundingBox.xmax + 1, c, c, polygon));
+             //console.log(raycasting(r, this.boundingBox.xmax + 1, c, c, polygon));
              if (raycasting(r, this.boundingBox.xmax + 1, c, c, polygon) === 'Collision') {
                 ctx.fillStyle = "green";
                 ctx.fillRect( r, c, 1, 1 );
