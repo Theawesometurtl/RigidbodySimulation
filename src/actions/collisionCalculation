@@ -1,0 +1,20 @@
+function collisionHandler(object) {
+   for (let i = 0; i < objec.vertices.x.length; i++) {
+      for (let polygons = 0; polygons < polygonList.length; polygons++) {
+         /*if (polygonList[polygons] != currentPolygon) {}*/
+         if (polygon.raycasting(object.vertices.x[i], object.vertices.x[i + 1], object.vertices.y[i],object.vertices.y[i], otherPolygon) === 'Collision') {
+            //this is colliding script
+            //let xKeneticEnergy = object.velocity.x * object.mass;
+            //let yKeneticEnergy = object.velocity.y * object.mass;
+            let angularKeneticEnergy = object.angularVelocity * object.momentOfInertia;
+
+            //so I need to find the linear angular velocity to add that to the x and y velocities I'll just take the previous coords and do trig
+            let xVelocity = object.vertexCoords.x - object.vertexCoords.prevX;
+            let yVelocity = object.vertexCoords.y - object.vertexCoords.prevY;
+            let xKeneticEnergy = xVelocity * object.mass;
+            let yKeneticEnergy = yVelocity * object.mass;
+            
+         }
+      }
+   }
+}
