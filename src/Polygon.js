@@ -208,6 +208,7 @@ class Polygon {
        and I'm averaging them out
        */
        this.momentOfInertia = (average / boundingBoxArea) * this.mass;
+       this.momentOfInertia = momentOfInertia(this.vertexCoords);
        console.log(this.momentOfInertia);
  
        /* code used during debugging of bounding box
