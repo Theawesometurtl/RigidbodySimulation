@@ -62,7 +62,7 @@ function triMomentOfInertia(vertices, mass) {
     else {
         by=vertices[1][1] - vertices[0][1];
     }
-    //pythagorean theorum this bitch
+    //pythagorean theorum this
     let b = Math.sqrt(bx**2+by**2);
     //this is some cool ass math. I convert the base into a line
     // and the vertex at the tip of my triangle into a line, and then I find
@@ -99,7 +99,7 @@ function triMomentOfInertia(vertices, mass) {
     else {
         centYDiff= vertices[0][1] - centroid[1]
     }
-    //pythagorean theorum this bitch
+    //pythagorean theorum this
     let centDistance = Math.sqrt(centXDiff**2+centYDiff**2);
 
     //parrellel axis theorum
