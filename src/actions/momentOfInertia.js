@@ -1,16 +1,18 @@
 function momentOfInertia(vertices, centroid) {
-    if (vertices.length < 3) {return null;};
+    if (vertices.x.length < 3) {return null;};
     let inertia = 0;
-    
-    for (var i = 0; i < vertices.length-1; i++) {
-        inertia += triMomentOfInertia([centroid, vertices[i], vertices[i + 1]]);
+    let mass = 1/vertices.x.length;
+    for (var i = 0; i < vertices.x.length-1; i++) {
+        inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
     }
     //this part is just bc the last moment of inertia repeats the first vertex
-    inertia += triMomentOfInertia([centroid, vertices[i], vertices[0]]);
+    inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
+
+   
     return inertia;
 };
 
-function triMomentOfInertia(vertices) {
+function triMomentOfInertia(vertices, mass) {
     let by;
     let bx;
     
@@ -36,5 +38,38 @@ function triMomentOfInertia(vertices) {
     
 
     let h = (slope*vertices[2][0]-vertices[2][1]) - bias;
-    return (b*h)**2/36;
+    let inertia = (b*h)**2/36;
+
+    //find distance between triangle centroid and actual centroid
+    centroid = [0, 0];
+    for (i = 0; i < vertices.length; i++) {
+        centroid[x] += vertices[i][0];
+        centroid[y] += vertices[i][1];
+    } 
+    centroid[0]/= 3
+    centroid[1]/= 3
+
+    let centXDiff;
+    let centYDiff;
+    
+
+    if (centroid[0] >= vertices[0][0]){
+        centXDiff=centroid[0] - vertices[0][0];
+    }
+    else {
+        centXDiff= vertices[0][0] - centroid[0]
+    }
+    if (centroid[1] >= vertices[0][1]){
+        centYDiff=centroid[1] - vertices[0][1];
+    }
+    else {
+        centYDiff= vertices[0][1] - centroid[1]
+    }
+    //pythagorean theorum this bitch
+    let centDistance = Math.sqrt(centXDiff**2+centYDiff**2);
+
+    //parrellel axis theorum
+    inertia += mass*(centDistance**2);
+
+    return inertia
 };
