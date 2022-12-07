@@ -5,7 +5,7 @@ function findMousePos(event) {
     if (polygon.simulation === false) {
        polygon.addVertex(event.clientX - rect.left, event.clientY - rect.top, 1)
     }
-    console.log(event.clientX - rect.left, event.clientY - rect.top);
+    //console.log(event.clientX - rect.left, event.clientY - rect.top);
   }
   //checking for mouse click event
   canvas.addEventListener("click", findMousePos);

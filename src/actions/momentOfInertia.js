@@ -32,47 +32,46 @@ maybe they should be passed as lists with a dictionary of x + y coordinates inst
 
 
 */
-function momentOfInertia(vertices, centroid) {
+function momentOfInertia(vertices, centroid, mass) {
     if (vertices.x.length < 3) {return null;};
     let inertia = 0;
-    let mass = 1/vertices.x.length;
+
+    let triangle;
+    let area = 0;
+    let areas = [];
+    //calculation of area of the polygon so that I can calculate the mass of each individually triangle
     for (var i = 0; i < vertices.x.length-1; i++) {
-        inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
+        console.log(centroid, vertices, mass);
+        triangle = baseHeightOfTrig([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
+        area += triangle.base * triangle.height /2;
+        areas.Add(triangle.base * triangle.height /2)
+    }   
+    //this part is just bc the last moment of inertia repeats the first vertex
+    triangle = baseHeightOfTrig([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
+    area += triangle.base * triangle.height /2
+    areas.Add(triangle.base * triangle.height /2)
+
+
+    for (var i = 0; i < vertices.x.length-1; i++) {
+        inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], areas[i] / area);
     }
     //this part is just bc the last moment of inertia repeats the first vertex
-    inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], mass);
+    inertia += triMomentOfInertia([centroid, [vertices.x[i], vertices.y[i]], [vertices.x[i + 1], vertices.y[i + 1]]], areas[vertices.x.length] / area);
 
    
     return inertia;
 };
 
 function triMomentOfInertia(vertices, mass) {
-    let by;
-    let bx;
     
-    if (vertices[0][0] >= vertices[1][0]){
-        bx=vertices[0][0] - vertices[1][0];
-    }
-    else {
-        bx=vertices[1][0] - vertices[0][0]
-    }
-    if (vertices[0][1] >= vertices[1][1]){
-        by=vertices[0][1] - vertices[1][1];
-    }
-    else {
-        by=vertices[1][1] - vertices[0][1];
-    }
-    //pythagorean theorum this
-    let b = Math.sqrt(bx**2+by**2);
-    //this is some cool ass math. I convert the base into a line
-    // and the vertex at the tip of my triangle into a line, and then I find
-    // the bias of the two lines. This difference in bias is the height of the triangle
-    let slope = by/bx;
-    let bias = slope*vertices[0][0]-vertices[0][1];
-    
+    let b = baseHeightOfTrig(vertices).base
+    let h = baseHeightOfTrig(vertices).height
 
-    let h = (slope*vertices[2][0]-vertices[2][1]) - bias;
-    let inertia = (b*h)**2/36;
+
+    //I got the formula for the moment of inertia of a triangle around the z axis from here:
+    //www.calculatoratoz.com/en/mass-moment-of-inertia-of-triangular-plate-about-z-axis-through-centroid-perpendicular-to-plate-calculator/Calc-9553
+
+    let inertia = (mass/72) * (3 * (b**2) + 4 * (h**2));
 
     //find distance between triangle centroid and actual centroid
     centroid = [0, 0];
@@ -87,18 +86,9 @@ function triMomentOfInertia(vertices, mass) {
     let centYDiff;
     
 
-    if (centroid[0] >= vertices[0][0]){
-        centXDiff=centroid[0] - vertices[0][0];
-    }
-    else {
-        centXDiff= vertices[0][0] - centroid[0]
-    }
-    if (centroid[1] >= vertices[0][1]){
-        centYDiff=centroid[1] - vertices[0][1];
-    }
-    else {
-        centYDiff= vertices[0][1] - centroid[1]
-    }
+    centXDiff = positiveDifference(centroid[0], vertices[0][0]);
+    centYDiff = positiveDifference(centroid[1], vertices[0][1]);
+
     //pythagorean theorum this
     let centDistance = Math.sqrt(centXDiff**2+centYDiff**2);
 
@@ -107,3 +97,37 @@ function triMomentOfInertia(vertices, mass) {
 
     return inertia
 };
+
+function baseHeightOfTrig(vertices) {
+    let by;
+    let bx;
+    
+    console.log(vertices);
+    bx = positiveDifference(vertices[0].x, vertices[1][0]);
+    by = positiveDifference(vertices[0].y, vertices[1][1]);
+
+
+    //pythagorean theorum this
+    let b = Math.sqrt(bx**2+by**2);
+    //this is some cool ass math. I convert the base into a line
+    // and the vertex at the tip of my triangle into a line, and then I find
+    // the bias of the two lines. This difference in bias is the height of the triangle
+    let slope = by/bx;
+    let bias = slope*vertices[0].x-vertices[0].y;
+    
+
+    let h = (slope*vertices[2][0]-vertices[2][1]) - bias;
+
+    return {'base': b,'height': h, 'slope':slope};
+}
+
+function positiveDifference(a, b) {
+    let answer;
+    if (a >= b){
+        answer=a - b;
+    }
+    else {
+        answer= b -  a
+    }
+    return answer;
+}

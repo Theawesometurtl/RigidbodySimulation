@@ -3,7 +3,7 @@ class Polygon {
        this.vertices = {
           x : [],
           y: [],
-          radius: []
+          radius: [],
        };
  
        this.vertexCoords = {
@@ -209,7 +209,7 @@ class Polygon {
        */
        this.momentOfInertia = (average / boundingBoxArea) * this.mass;
        this.momentOfInertia = momentOfInertia(this.vertexCoords);
-       console.log(this.momentOfInertia);
+       //console.log(this.momentOfInertia);
  
        /* code used during debugging of bounding box
        ctx.fillStyle = 'green'
@@ -221,6 +221,12 @@ class Polygon {
        ctx.closePath();
        ctx.fill();
        */
+      
+      let v = this.vertexCoords
+      let p = this.position
+      let m = this.mass
+      console.log(v, p, m);//yeah I'm gonna give up now, for some reason when the code below fails, this console log doesn't work idk why
+      this.momentOfInertia = momentOfInertia(v, p, m);
     }
     /*
     the colidingPolygon perameter in my raycasting function is the other polygon that would be
